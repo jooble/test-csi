@@ -17,7 +17,7 @@ public class PriceHelper {
 
         for (Price newPrice : newPrices) {
 
-            List<Price> cleans = getAllIntersectPrice(newPrice, copyOldPrices, combinedPrices);
+            List<Price> cleans = getAllIntersectPrice(newPrice, copyOldPrices);
             removeFullIntersect(newPrice, cleans);
             removeFullIntersect(newPrice, combinedPrices);
 
@@ -42,13 +42,15 @@ public class PriceHelper {
                         p.setEnd(newPrice.getBegin());
 
                         Collections.addAll(combinedPrices, p, newPrice, right);
+
+                        copyOldPrices.add(right);
+                        copyOldPrices.sort(Comparator.comparing(Price::getBegin));
                     } else {
                         if (newPrice.getBegin().compareTo(p.getBegin()) <= 0) {
                             p.setBegin(newPrice.getEnd());
                         } else {
                             p.setEnd(newPrice.getBegin());
                         }
-
 
                         Collections.addAll(combinedPrices, p, newPrice);
                     }
@@ -62,7 +64,7 @@ public class PriceHelper {
                     left.setEnd(newPrice.getEnd());
                     right.setBegin(newPrice.getEnd());
 
-                    combinedPrices.addAll(Arrays.asList(left, right));
+                    Collections.addAll(combinedPrices, left, right);
                 } else {
                     left.setEnd(newPrice.getBegin());
                     right.setBegin(newPrice.getEnd());
@@ -74,16 +76,16 @@ public class PriceHelper {
             cleans.clear();
         }
 
-        return combinedPrices
+        return new ArrayList<>(combinedPrices
                 .stream()
                 .filter(price -> price.getBegin().compareTo(price.getEnd()) != 0)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet()));
     }
 
-    private List<Price> getAllIntersectPrice(Price price, List<Price> prices, List<Price> combined) {
+    private List<Price> getAllIntersectPrice(Price price, List<Price> prices) {
         return prices
                 .stream()
-                .filter(p -> isIntersect(price, p) && !combined.contains(p))
+                .filter(p -> isIntersect(price, p))
                 .collect(Collectors.toList());
     }
 

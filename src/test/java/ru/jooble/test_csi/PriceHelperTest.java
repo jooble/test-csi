@@ -143,4 +143,6 @@ public class PriceHelperTest {
         assertTrue(result.contains(new Price("12345", 1, 1,
                 sdf.parse("28.01.2013 23:59:59"), sdf.parse("31.01.2013 23:59:59"), 90)));
     }
+
+
 }
